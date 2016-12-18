@@ -49,6 +49,7 @@ int pmodoled_dry_run(struct pmodoled_drv *self, void *data,
 int pmodoled_turn_on (struct pmodoled_drv *self)
 {
     TRY(set_pin_value(self, PIN_DC,    0));
+
     TRY(set_pin_value(self, PIN_VDDC,  0));
     TRY(wait_ms(self, 1));
 
@@ -67,6 +68,8 @@ int pmodoled_turn_on (struct pmodoled_drv *self)
 
 int pmodoled_turn_off (struct  pmodoled_drv *self)
 {
+    TRY(set_pin_value(self, PIN_DC, 0));
+
     self->status.enabled = false;
 
     TRY(write_spi_byte(self, 0xaE));
@@ -79,9 +82,29 @@ int pmodoled_turn_off (struct  pmodoled_drv *self)
     return 0;
 }
 
+int pmodoled_send_buffer (struct pmodoled_drv *self)
+{
+    for (size_t i = 0; i < PMODOLED_WIDTH; ++i) {
+        TRY(set_pin_value(self, PIN_DC, 0));
+        TRY(write_spi_byte(self, 0x22));
+        TRY(write_spi_byte(self, i));
+        TRY(write_spi_byte(self, 0x00));
+        TRY(write_spi_byte(self, 0x10));
+        TRY(set_pin_value(self, PIN_DC, 1));
+        for (size_t j = 0; j < PMODOLED_HEIGHT >> 3; ++j) {
+            TRY(write_spi_byte(self, self->status.framebuffer[i][j*8]));
+        }
+    }
+    TRY(set_pin_value(self, PIN_DC, 0));
+
+    return 0;
+}
+
 int pmodoled_reset (struct pmodoled_drv * self)
 {
     self->status.enabled = false;
+
+    TRY(set_pin_value(self, PIN_DC,  0));
 
     TRY(set_pin_value(self, PIN_RES, 0));
     TRY(wait_ms(self, 3));

@@ -18,7 +18,7 @@ enum pin {
 struct pmodoled_status {
     bool enabled;
     bool inverted;
-    uint8_t framebuffer[PMODOLED_HEIGHT][PMODOLED_WIDTH];
+    uint8_t framebuffer[PMODOLED_WIDTH][PMODOLED_HEIGHT >> 3];
 };
 
 struct pmodoled_drv {
@@ -38,6 +38,8 @@ int pmodoled_dry_run(struct pmodoled_drv *, void *data,
 int pmodoled_turn_on (struct pmodoled_drv *);
 int pmodoled_turn_off(struct pmodoled_drv *);
 int pmodeled_reset   (struct pmodoled_drv *);
+
+int pmodoled_send_buffer (struct pmodoled_drv *);
 
 #endif // pmodoled_h_INCLUDED
 
