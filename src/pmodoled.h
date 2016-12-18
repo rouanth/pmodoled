@@ -37,6 +37,7 @@ int pmodoled_dry_run(struct pmodoled_drv *, void *data,
 
 int pmodoled_turn_on (struct pmodoled_drv *);
 int pmodoled_turn_off(struct pmodoled_drv *);
+int pmodeled_reset   (struct pmodoled_drv *);
 
 #endif // pmodoled_h_INCLUDED
 

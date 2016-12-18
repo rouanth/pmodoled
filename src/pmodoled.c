@@ -79,3 +79,18 @@ int pmodoled_turn_off (struct  pmodoled_drv *self)
     return 0;
 }
 
+int pmodoled_reset (struct pmodoled_drv * self)
+{
+    self->status.enabled = false;
+
+    TRY(set_pin_value(self, PIN_RES, 0));
+    TRY(wait_ms(self, 3));
+    TRY(set_pin_value(self, PIN_RES, 1));
+
+    pmodoled_status_init(&self->status);
+
+    self->status.enabled = true;
+
+    return 0;
+}
+
